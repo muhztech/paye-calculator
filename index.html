@@ -183,7 +183,7 @@
       </div>
     </div>
 
-    <button class="process-btn" onclick="processPayslip()">Process Payslip</button>
+    <button class="process-btn" onclick="processSelectedFile()">Process Payslip</button>
 
     <p class="loading" id="loading"></p>
     <div class="result" id="result"></div>
@@ -197,30 +197,31 @@
   <script src="script.js"></script>
 
   <script>
-    // Updated processPayslip() wrapper to accept a file
-    function processPayslipWrapper(file = null) {
-      // Pass selected file to your original processPayslip()
-      // If no file passed, fallback to fileInput (optional)
-      processPayslip(file);
-    }
+    // Store the last selected file
+    let selectedFile = null;
 
-    // Forward selected file from camera or gallery to processPayslip
+    // When user picks from camera
     document.getElementById('cameraInput').addEventListener('change', (e) => {
-      if(e.target.files.length) {
-        processPayslipWrapper(e.target.files[0]);
+      if (e.target.files.length) {
+        selectedFile = e.target.files[0];
       }
     });
 
+    // When user picks from gallery
     document.getElementById('galleryInput').addEventListener('change', (e) => {
-      if(e.target.files.length) {
-        processPayslipWrapper(e.target.files[0]);
+      if (e.target.files.length) {
+        selectedFile = e.target.files[0];
       }
     });
 
-    // Optional: Process button fallback
-    document.querySelector('.process-btn').addEventListener('click', () => {
-      alert("Select a payslip first using Camera or Gallery!");
-    });
+    // Process button uses the last selected file
+    function processSelectedFile() {
+      if (!selectedFile) {
+        alert("Please take a photo or upload a payslip first!");
+        return;
+      }
+      processPayslip(selectedFile); // Calls your original function
+    }
   </script>
 
 </body>
