@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Nigeria PAYE Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Tesseract OCR -->
+  <script src="https://unpkg.com/tesseract.js@4.1.1/dist/tesseract.min.js"></script>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #eef2f7, #f9fafb);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 460px;
+      padding: 28px;
+      border-radius: 14px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .header h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      font-size: 14px;
+      color: #64748b;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      color: #334155;
+      margin-bottom: 6px;
+    }
+
+    input[type="file"] {
+      width: 100%;
+      padding: 12px;
+      border: 1.8px dashed #cbd5e1;
+      border-radius: 10px;
+      background: #f8fafc;
+      cursor: pointer;
+      transition: border 0.3s;
+    }
+
+    input[type="file"]:hover {
+      border-color: #0a7cff;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 18px;
+      border-radius: 10px;
+      border: none;
+      background: linear-gradient(135deg, #0a7cff, #0056d6);
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(10, 124, 255, 0.3);
+    }
+
+    button:active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+
+    .loading {
+      margin-top: 14px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #d97706;
+      text-align: center;
+    }
+
+    .result {
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: 10px;
+      background: #f1f5f9;
+      font-size: 14px;
+      color: #0f172a;
+      line-height: 1.6;
+    }
+
+    .footer {
+      margin-top: 18px;
+      text-align: center;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        padding: 22px;
+      }
+
+      .header h2 {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+    <div class="header">
+      <h2>Muhztech PAYE Calculator</h2>
+      <p>Based on Nigeria’s New Tax Reform Bill</p>
+    </div>
+
+    <label>Upload Payslip (JPG / PNG only)</label>
+    <input type="file" id="fileInput" accept="image/png,image/jpeg">
+
+    <button onclick="processPayslip()">Process Payslip</button>
+
+    <p class="loading" id="loading"></p>
+    <div class="result" id="result"></div>
+
+    <div class="footer">
+      © 2026 Muhztech | PAYE Automation System
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
