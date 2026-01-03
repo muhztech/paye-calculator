@@ -193,9 +193,7 @@
       </div>
     </div>
 
-    <div class="preview-container" id="previewContainer">
-      <!-- Selected image will appear here -->
-    </div>
+    <div class="preview-container" id="previewContainer"></div>
 
     <button class="process-btn" onclick="processSelectedFile()">Process Payslip</button>
 
@@ -207,9 +205,8 @@
     </div>
   </div>
 
-  <script src="script.js"></script>
-
   <script>
+    // Store the last selected file
     let selectedFile = null;
 
     const previewContainer = document.getElementById('previewContainer');
@@ -222,22 +219,25 @@
       reader.readAsDataURL(file);
     }
 
+    // Camera input
     document.getElementById('cameraInput').addEventListener('change', (e) => {
-      if (e.target.files.length) {
+      if(e.target.files.length){
         selectedFile = e.target.files[0];
         showPreview(selectedFile);
       }
     });
 
+    // Gallery input
     document.getElementById('galleryInput').addEventListener('change', (e) => {
-      if (e.target.files.length) {
+      if(e.target.files.length){
         selectedFile = e.target.files[0];
         showPreview(selectedFile);
       }
     });
 
+    // Process button
     function processSelectedFile() {
-      if (!selectedFile) {
+      if(!selectedFile){
         alert("Please take a photo or upload a payslip first!");
         return;
       }
@@ -245,5 +245,7 @@
     }
   </script>
 
+  <!-- Include your existing script.js -->
+  <script src="script.js"></script>
 </body>
 </html>
