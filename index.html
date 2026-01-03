@@ -196,16 +196,16 @@
   <script src="script.js"></script>
 
   <script>
-    // Forward camera/gallery selection to your existing processPayslip()
+    // Forward selected file from camera or gallery to processPayslip
     document.getElementById('cameraInput').addEventListener('change', (e) => {
       if(e.target.files.length) {
-        document.getElementById('fileInput').files = e.target.files;
+        processPayslip(e.target.files[0]);
       }
     });
 
     document.getElementById('galleryInput').addEventListener('change', (e) => {
       if(e.target.files.length) {
-        document.getElementById('fileInput').files = e.target.files;
+        processPayslip(e.target.files[0]);
       }
     });
   </script>
