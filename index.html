@@ -74,34 +74,43 @@
     }
 
     .upload-box {
-      border: 2px dashed #cbd5e1;
-      border-radius: 14px;
-      padding: 18px;
-      text-align: center;
-      background: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .upload-box button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, #2563eb, #1e40af);
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
       transition: all 0.25s ease;
     }
 
-    .upload-box:hover {
-      border-color: #2563eb;
-      background: #f0f6ff;
+    .upload-box button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.35);
     }
 
-    input[type="file"] {
-      width: 100%;
-      cursor: pointer;
-      font-size: 13px;
+    .upload-box input[type="file"] {
+      display: none;
     }
 
     .hint {
       font-size: 12px;
       color: #64748b;
-      margin-top: 6px;
+      text-align: center;
     }
 
-    button {
+    button.process-btn {
       width: 100%;
-      margin-top: 20px;
+      margin-top: 10px;
       padding: 14px;
       border-radius: 14px;
       border: none;
@@ -113,7 +122,7 @@
       transition: all 0.25s ease;
     }
 
-    button:hover {
+    button.process-btn:hover {
       transform: translateY(-2px);
       box-shadow: 0 14px 28px rgba(37, 99, 235, 0.35);
     }
@@ -157,17 +166,24 @@
 
     <label>Upload / Capture Payslip</label>
     <div class="upload-box">
-      <input
-        type="file"
-        id="fileInput"
-        accept="image/*"
-      >
+      <!-- Camera Button -->
+      <button type="button" onclick="document.getElementById('cameraInput').click()">
+        📷 Take Photo
+      </button>
+      <input type="file" id="cameraInput" accept="image/*" capture>
+
+      <!-- Gallery Button -->
+      <button type="button" onclick="document.getElementById('galleryInput').click()">
+        📁 Upload from Gallery
+      </button>
+      <input type="file" id="galleryInput" accept="image/*">
+
       <div class="hint">
-        📷 Take a photo or select from gallery • JPG / PNG • Recommended under 3MB
+        Take a photo or select from gallery • JPG / PNG • Recommended under 3MB
       </div>
     </div>
 
-    <button onclick="processPayslip()">Process Payslip</button>
+    <button class="process-btn" onclick="processPayslip()">Process Payslip</button>
 
     <p class="loading" id="loading"></p>
     <div class="result" id="result"></div>
@@ -178,5 +194,21 @@
   </div>
 
   <script src="script.js"></script>
+
+  <script>
+    // Forward camera/gallery selection to your existing processPayslip()
+    document.getElementById('cameraInput').addEventListener('change', (e) => {
+      if(e.target.files.length) {
+        document.getElementById('fileInput').files = e.target.files;
+      }
+    });
+
+    document.getElementById('galleryInput').addEventListener('change', (e) => {
+      if(e.target.files.length) {
+        document.getElementById('fileInput').files = e.target.files;
+      }
+    });
+  </script>
+
 </body>
 </html>
