@@ -193,20 +193,33 @@
     </div>
   </div>
 
+  <!-- Your existing script.js -->
   <script src="script.js"></script>
 
   <script>
+    // Updated processPayslip() wrapper to accept a file
+    function processPayslipWrapper(file = null) {
+      // Pass selected file to your original processPayslip()
+      // If no file passed, fallback to fileInput (optional)
+      processPayslip(file);
+    }
+
     // Forward selected file from camera or gallery to processPayslip
     document.getElementById('cameraInput').addEventListener('change', (e) => {
       if(e.target.files.length) {
-        processPayslip(e.target.files[0]);
+        processPayslipWrapper(e.target.files[0]);
       }
     });
 
     document.getElementById('galleryInput').addEventListener('change', (e) => {
       if(e.target.files.length) {
-        processPayslip(e.target.files[0]);
+        processPayslipWrapper(e.target.files[0]);
       }
+    });
+
+    // Optional: Process button fallback
+    document.querySelector('.process-btn').addEventListener('click', () => {
+      alert("Select a payslip first using Camera or Gallery!");
     });
   </script>
 
