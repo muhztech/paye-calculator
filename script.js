@@ -1,8 +1,7 @@
-function processPayslip() {
-  const file = document.getElementById("fileInput").files[0];
-
+// Main function now accepts a file
+function processPayslip(file) {
   if (!file) {
-    alert("Please upload a payslip");
+    alert("Please take a photo or upload a payslip first!");
     return;
   }
 
@@ -49,6 +48,7 @@ function extractAmount(text, keywords) {
   return null;
 }
 
+// PAYE calculation logic
 function calculateNewPAYE(monthlyGross, pensionMonthly, currentPAYE) {
 
   let annualIncome = monthlyGross * 12;
