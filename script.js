@@ -1,80 +1,42 @@
-let selectedPayslipFile = null;
-
-/* ===============================
-   FILE SELECTION & CAMERA
-================================ */
-
-function handlePayslipSelection(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  selectedPayslipFile = file;
-  previewFile(file);
-}
-
-function openCamera() {
-  const cameraInput = document.createElement("input");
-  cameraInput.type = "file";
-  cameraInput.accept = "image/*";
-  cameraInput.capture = "environment";
-
-  cameraInput.onchange = function (e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    selectedPayslipFile = file;
-    previewFile(file);
-  };
-
-  cameraInput.click();
-}
-
-function previewFile(file) {
-  const reader = new FileReader();
-  reader.onload = function () {
-    const img = document.getElementById("previewImage");
-    img.src = reader.result;
-    img.style.display = "block";
-  };
-  reader.readAsDataURL(file);
-}
-
-/* ===============================
-   PAYE OCR PROCESSING
-================================ */
-
-function processPayslip() {
-  const file = selectedPayslipFile;
-
+// Main function now accepts a file
+function processPayslip(file) {
   if (!file) {
-    alert("Please select a payslip using gallery or camera");
+    alert("Please take a photo or upload a payslip first!");
     return;
   }
 
   document.getElementById("loading").innerText = "Reading payslip... Please wait";
 
-  Tesseract.recognize(file, 'eng')
-    .then(({ data: { text } }) => {
+  Tesseract.recognize(
+    file,
+    'eng',
+    { logger: m => console.log(m) }
+  ).then(({ data: { text } }) => {
 
-      document.getElementById("loading").innerText = "";
+    document.getElementById("loading").innerText = "";
 
-      text = text.toUpperCase();
+    // Convert text to uppercase for easier matching
+    text = text.toUpperCase();
 
-      let gross = extractAmount(text, ["GROSS PAY", "GROSS"]);
-      let pension = extractAmount(text, ["PENSION"]);
-      let payeCurrent = extractAmount(text, ["PAYE", "PAY AS YOU EARN"]);
+    // Try to extract figures
+    let gross = extractAmount(text, ["GROSS PAY", "GROSS"]);
+    let pension = extractAmount(text, ["PENSION"]);
+    let payeCurrent = extractAmount(text, ["PAYE", "PAY AS YOU EARN"]);
 
-      if (!gross) {
-        alert("Could not detect Gross Pay. Try a clearer payslip.");
-        return;
-      }
+    if (!gross) {
+      alert("Could not detect Gross Pay. Try a clearer payslip.");
+      return;
+    }
 
-      calculateNewPAYE(gross, pension || 0, payeCurrent || 0);
-    })
-    .catch(err => {
-      alert("Error reading payslip");
-      console.error(err);
-    });
+    calculateNewPAYE(gross, pension || 0, payeCurrent || 0);
+
+  }).catch(err => {
+    alert("Error reading payslip");
+    console.error(err);
+  });
 }
 
+// Extract amount after keywords
 function extractAmount(text, keywords) {
   for (let key of keywords) {
     let regex = new RegExp(key + "[^0-9]*([0-9,.]+)");
@@ -86,10 +48,7 @@ function extractAmount(text, keywords) {
   return null;
 }
 
-/* ===============================
-   NEW PAYE CALCULATION
-================================ */
-
+// PAYE calculation logic
 function calculateNewPAYE(monthlyGross, pensionMonthly, currentPAYE) {
 
   let annualIncome = monthlyGross * 12;

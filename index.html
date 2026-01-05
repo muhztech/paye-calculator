@@ -2,218 +2,210 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Muhztech Tax Calculator</title>
+  <title>Nigeria PAYE Calculator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- OCR -->
+  <!-- Tesseract OCR -->
   <script src="https://unpkg.com/tesseract.js@4.1.1/dist/tesseract.min.js"></script>
 
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    * { box-sizing: border-box; }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #eef2f7, #f9fafb);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
+    *{box-sizing:border-box;}
+    body{
+      font-family:'Inter',sans-serif;
+      background:
+        radial-gradient(circle at top left, #e0eaff, transparent 60%),
+        radial-gradient(circle at bottom right, #fef3c7, transparent 55%),
+        linear-gradient(135deg, #eef2f7, #f9fafb);
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
     }
-
-    .card {
-      width: 100%;
-      max-width: 480px;
-      background: #ffffff;
-      border-radius: 20px;
-      padding: 28px;
-      box-shadow: 0 20px 40px rgba(0,0,0,.12);
+    .card{
+      width:100%;
+      max-width:480px;
+      background:rgba(255,255,255,0.92);
+      backdrop-filter:blur(12px);
+      border-radius:18px;
+      padding:30px;
+      box-shadow:0 20px 45px rgba(15,23,42,0.12);
     }
-
-    h1 {
-      text-align: center;
-      font-size: 22px;
-      margin-bottom: 4px;
+    .header{text-align:center;margin-bottom:26px;}
+    .badge{
+      display:inline-block;
+      padding:4px 10px;
+      border-radius:999px;
+      background:#e0ecff;
+      color:#1d4ed8;
+      font-size:12px;
+      font-weight:600;
+      margin-bottom:10px;
     }
-
-    .subtitle {
-      text-align: center;
-      font-size: 14px;
-      color: #64748b;
-      margin-bottom: 20px;
+    .header h2{font-size:22px;font-weight:700;color:#0f172a;margin-bottom:6px;}
+    .header p{font-size:14px;color:#64748b;}
+    label{font-size:14px;font-weight:600;color:#334155;margin-bottom:8px;display:block;}
+    .upload-box{display:flex;flex-direction:column;gap:12px;margin-bottom:12px;}
+    .upload-box button{
+      width:100%;padding:12px;border-radius:12px;border:none;
+      background:linear-gradient(135deg, #2563eb, #1e40af);
+      color:#fff;font-size:15px;font-weight:600;cursor:pointer;transition:all 0.25s ease;
     }
-
-    .tabs {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
+    .upload-box button:hover{
+      transform:translateY(-2px);
+      box-shadow:0 12px 24px rgba(37,99,235,0.35);
     }
-
-    .tabs button {
-      flex: 1;
-      padding: 12px;
-      border-radius: 12px;
-      border: none;
-      font-weight: 600;
-      cursor: pointer;
-      background: #e5e7eb;
-      color: #0f172a;
+    .upload-box input[type="file"]{display:none;}
+    .hint{font-size:12px;color:#64748b;text-align:center;}
+    .preview-container{margin-top:10px;text-align:center;}
+    .preview-container img{max-width:100%;border-radius:12px;margin-top:6px;box-shadow:0 6px 18px rgba(0,0,0,0.1);}
+    button.process-btn{
+      width:100%;margin-top:12px;padding:14px;border-radius:14px;border:none;
+      background:linear-gradient(135deg, #2563eb, #1e40af);
+      color:#fff;font-size:16px;font-weight:600;cursor:pointer;transition:all 0.25s ease;
     }
-
-    .tabs button.active {
-      background: #2563eb;
-      color: #ffffff;
+    button.process-btn:hover{
+      transform:translateY(-2px);box-shadow:0 14px 28px rgba(37,99,235,0.35);
     }
-
-    label {
-      font-size: 14px;
-      font-weight: 600;
-      margin-top: 14px;
-      display: block;
-    }
-
-    input {
-      width: 100%;
-      padding: 12px;
-      margin-top: 6px;
-      border-radius: 10px;
-      border: 1px solid #cbd5e1;
-    }
-
-    .upload-box {
-      border: 2px dashed #cbd5e1;
-      padding: 16px;
-      border-radius: 14px;
-      margin-top: 10px;
-      background: #f8fafc;
-    }
-
-    .btn {
-      width: 100%;
-      margin-top: 18px;
-      padding: 14px;
-      border-radius: 14px;
-      border: none;
-      background: linear-gradient(135deg, #2563eb, #1e40af);
-      color: white;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .btn.dark {
-      background: #0f172a;
-    }
-
-    .result {
-      margin-top: 20px;
-      padding: 16px;
-      discover: block;
-      border-radius: 14px;
-      background: #f1f5f9;
-      font-size: 14px;
-    }
-
-    .hidden {
-      display: none;
-    }
+    .loading{margin-top:16px;text-align:center;font-size:14px;font-weight:500;color:#b45309;}
+    .result{margin-top:18px;padding:16px;border-radius:14px;background:linear-gradient(135deg,#f8fafc,#eef2f7);border:1px solid #e5e7eb;font-size:14px;color:#0f172a;line-height:1.7;}
+    .footer{margin-top:22px;text-align:center;font-size:12px;color:#94a3b8;}
   </style>
 </head>
-
 <body>
 
-<div class="card">
-
-  <h1>Muhztech Tax Calculator</h1>
-  <div class="subtitle">PAYE & Self-Employed (Nigeria 2026 Reform)</div>
-
-  <!-- Tabs -->
-  <div class="tabs">
-    <button id="payeTab" class="active" onclick="showPAYE()">PAYE</button>
-    <button id="seTab" onclick="showSE()">Self-Employed</button>
-  </div>
-
-  <!-- PAYE SECTION -->
-  <div id="payeSection">
-
-    <label>Upload Payslip (Gallery)</label>
-    <div class="upload-box">
-      <input type="file" id="fileInput" accept="image/*">
+  <div class="card">
+    <div class="header">
+      <div class="badge">PAYE • OCR Powered</div>
+      <h2>Muhztech PAYE Calculator</h2>
+      <p>Take a photo or upload your payslip</p>
     </div>
 
-    <button class="btn dark" onclick="openCamera()">📷 Take Photo</button>
+    <label>Upload / Capture Payslip</label>
+    <div class="upload-box">
+      <button type="button" onclick="document.getElementById('cameraInput').click()">📷 Take Photo</button>
+      <input type="file" id="cameraInput" accept="image/*" capture>
+      <button type="button" onclick="document.getElementById('galleryInput').click()">📁 Upload from Gallery</button>
+      <input type="file" id="galleryInput" accept="image/*">
+      <div class="hint">Take a photo or select from gallery • JPG / PNG • Recommended under 3MB</div>
+    </div>
 
-    <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden">
+    <div class="preview-container" id="previewContainer"></div>
 
-    <button class="btn" onclick="processPayslip()">Process PAYE</button>
+    <button class="process-btn" onclick="processSelectedFile()">Process Payslip</button>
 
-    <div id="loading"></div>
-    <div id="result" class="result"></div>
+    <p class="loading" id="loading"></p>
+    <div class="result" id="result"></div>
 
+    <div class="footer">© 2026 Muhztech · PAYE Automation System</div>
   </div>
 
-  <!-- SELF EMPLOYED SECTION -->
-  <div id="seSection" class="hidden">
+  <script>
+    let selectedFile = null;
+    const previewContainer = document.getElementById('previewContainer');
 
-    <label>Annual Income (₦)</label>
-    <input type="number" id="seIncome">
-
-    <label>Total Allowable Expenses (₦)</label>
-    <input type="number" id="seExpenses">
-
-    <label>Pension Contribution (₦)</label>
-    <input type="number" id="sePension">
-
-    <button class="btn" onclick="calculateSelfEmployedTax()">Calculate Self-Employed Tax</button>
-
-    <div id="seResult" class="result"></div>
-
-  </div>
-
-</div>
-
-<script src="script.js"></script>
-
-<script>
-  let selectedFile = null;
-
-  document.getElementById("fileInput").addEventListener("change", e => {
-    selectedFile = e.target.files[0];
-  });
-
-  document.getElementById("cameraInput").addEventListener("change", e => {
-    selectedFile = e.target.files[0];
-  });
-
-  function openCamera() {
-    document.getElementById("cameraInput").click();
-  }
-
-  function showPAYE() {
-    document.getElementById("payeSection").classList.remove("hidden");
-    document.getElementById("seSection").classList.add("hidden");
-    document.getElementById("payeTab").classList.add("active");
-    document.getElementById("seTab").classList.remove("active");
-  }
-
-  function showSE() {
-    document.getElementById("seSection").classList.remove("hidden");
-    document.getElementById("payeSection").classList.add("hidden");
-    document.getElementById("seTab").classList.add("active");
-    document.getElementById("payeTab").classList.remove("active");
-  }
-
-  function processPayslip() {
-    if (!selectedFile) {
-      alert("Please select or capture a payslip first");
-      return;
+    function showPreview(file){
+      const reader = new FileReader();
+      reader.onload = e => {
+        previewContainer.innerHTML = `<img src="${e.target.result}" alt="Payslip Preview">`;
+      };
+      reader.readAsDataURL(file);
     }
-    window.processPayslipWithFile(selectedFile);
-  }
-</script>
 
+    document.getElementById('cameraInput').addEventListener('change', e => {
+      if(e.target.files.length){
+        selectedFile = e.target.files[0];
+        showPreview(selectedFile);
+      }
+    });
+
+    document.getElementById('galleryInput').addEventListener('change', e => {
+      if(e.target.files.length){
+        selectedFile = e.target.files[0];
+        showPreview(selectedFile);
+      }
+    });
+
+    function processSelectedFile(){
+      if(!selectedFile){
+        alert("Please take a photo or upload a payslip first!");
+        return;
+      }
+      processPayslip(selectedFile);
+    }
+
+    // --- Updated processPayslip function ---
+    function processPayslip(file){
+      if(!file){
+        alert("Please upload a payslip");
+        return;
+      }
+
+      document.getElementById("loading").innerText = "Reading payslip... Please wait";
+
+      Tesseract.recognize(file, 'eng', {logger: m => console.log(m)})
+      .then(({ data: { text } }) => {
+        document.getElementById("loading").innerText = "";
+        text = text.toUpperCase();
+
+        let gross = extractAmount(text, ["GROSS PAY","GROSS"]);
+        let pension = extractAmount(text, ["PENSION"]);
+        let payeCurrent = extractAmount(text, ["PAYE","PAY AS YOU EARN"]);
+
+        if(!gross){
+          alert("Could not detect Gross Pay. Try a clearer payslip.");
+          return;
+        }
+
+        calculateNewPAYE(gross, pension||0, payeCurrent||0);
+      })
+      .catch(err => { alert("Error reading payslip"); console.error(err); });
+    }
+
+    function extractAmount(text, keywords){
+      for(let key of keywords){
+        let regex = new RegExp(key+"[^0-9]*([0-9,.]+)");
+        let match = text.match(regex);
+        if(match) return Number(match[1].replace(/,/g,""));
+      }
+      return null;
+    }
+
+    function calculateNewPAYE(monthlyGross,pensionMonthly,currentPAYE){
+      let annualIncome = monthlyGross*12;
+      let pensionAnnual = pensionMonthly*12;
+      let taxableIncome = annualIncome - pensionAnnual;
+      let tax = 0;
+      if(taxableIncome>800000){
+        let remaining = taxableIncome - 800000;
+        let bands=[
+          {limit:2200000, rate:0.15},
+          {limit:9000000, rate:0.18},
+          {limit:13000000, rate:0.21},
+          {limit:25000000, rate:0.23},
+          {limit:Infinity, rate:0.25}
+        ];
+        for(let band of bands){
+          if(remaining<=0) break;
+          let amount=Math.min(band.limit,remaining);
+          tax+=amount*band.rate;
+          remaining-=amount;
+        }
+      }
+      let monthlyNewPAYE = tax/12;
+      let difference = currentPAYE - monthlyNewPAYE;
+      document.getElementById("result").innerHTML=`
+        <p><b>Detected Gross Pay:</b> ₦${monthlyGross.toLocaleString()}</p>
+        <p><b>Detected Pension:</b> ₦${pensionMonthly.toLocaleString()}</p>
+        <p><b>Current PAYE:</b> ₦${currentPAYE.toLocaleString()}</p>
+        <hr>
+        <p><b>Correct PAYE (New Law):</b> ₦${monthlyNewPAYE.toLocaleString()}</p>
+        <p><b>Difference:</b> ₦${difference.toLocaleString()}</p>
+      `;
+    }
+  </script>
 </body>
 </html>
