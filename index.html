@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Nigeria PAYE & Self-Employed Tax Calculator</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <title>Muhztech Tax Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Tesseract OCR -->
+  <!-- OCR -->
   <script src="https://unpkg.com/tesseract.js@4.1.1/dist/tesseract.min.js"></script>
 
   <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
     * { box-sizing: border-box; }
@@ -26,19 +26,20 @@
 
     .card {
       width: 100%;
-      max-width: 500px;
-      background: #fff;
+      max-width: 480px;
+      background: #ffffff;
+      border-radius: 20px;
       padding: 28px;
-      border-radius: 18px;
-      box-shadow: 0 20px 40px rgba(0,0,0,.1);
+      box-shadow: 0 20px 40px rgba(0,0,0,.12);
     }
 
-    h2 {
+    h1 {
       text-align: center;
-      margin-bottom: 6px;
+      font-size: 22px;
+      margin-bottom: 4px;
     }
 
-    p.subtitle {
+    .subtitle {
       text-align: center;
       font-size: 14px;
       color: #64748b;
@@ -53,108 +54,166 @@
 
     .tabs button {
       flex: 1;
-      padding: 10px;
+      padding: 12px;
+      border-radius: 12px;
       border: none;
-      border-radius: 10px;
       font-weight: 600;
       cursor: pointer;
       background: #e5e7eb;
+      color: #0f172a;
     }
 
     .tabs button.active {
       background: #2563eb;
-      color: #fff;
+      color: #ffffff;
     }
 
     label {
       font-size: 14px;
       font-weight: 600;
-      margin-bottom: 6px;
+      margin-top: 14px;
       display: block;
     }
 
     input {
       width: 100%;
       padding: 12px;
+      margin-top: 6px;
       border-radius: 10px;
       border: 1px solid #cbd5e1;
-      margin-bottom: 14px;
     }
 
-    input[type="file"] {
+    .upload-box {
       border: 2px dashed #cbd5e1;
+      padding: 16px;
+      border-radius: 14px;
+      margin-top: 10px;
       background: #f8fafc;
-      cursor: pointer;
     }
 
-    button.main {
+    .btn {
       width: 100%;
+      margin-top: 18px;
       padding: 14px;
-      border-radius: 12px;
+      border-radius: 14px;
       border: none;
       background: linear-gradient(135deg, #2563eb, #1e40af);
-      color: #fff;
+      color: white;
       font-size: 16px;
       font-weight: 600;
       cursor: pointer;
     }
 
-    .loading {
-      text-align: center;
-      margin-top: 14px;
-      color: #b45309;
+    .btn.dark {
+      background: #0f172a;
     }
 
     .result {
-      margin-top: 18px;
-      background: #f1f5f9;
+      margin-top: 20px;
       padding: 16px;
-      border-radius: 12px;
-      line-height: 1.7;
+      discover: block;
+      border-radius: 14px;
+      background: #f1f5f9;
       font-size: 14px;
     }
 
-    .hidden { display: none; }
+    .hidden {
+      display: none;
+    }
   </style>
 </head>
 
 <body>
 
 <div class="card">
-  <h2>Muhztech Tax Calculator</h2>
-  <p class="subtitle">PAYE & Self-Employed (2026 Reform)</p>
+
+  <h1>Muhztech Tax Calculator</h1>
+  <div class="subtitle">PAYE & Self-Employed (Nigeria 2026 Reform)</div>
 
   <!-- Tabs -->
   <div class="tabs">
     <button id="payeTab" class="active" onclick="showPAYE()">PAYE</button>
-    <button id="selfTab" onclick="showSelf()">Self-Employed</button>
+    <button id="seTab" onclick="showSE()">Self-Employed</button>
   </div>
 
   <!-- PAYE SECTION -->
   <div id="payeSection">
-    <label>Upload / Capture Payslip</label>
-    <input type="file" id="fileInput" accept="image/*" capture="environment">
-    <button class="main" onclick="processPayslip()">Process PAYE</button>
+
+    <label>Upload Payslip (Gallery)</label>
+    <div class="upload-box">
+      <input type="file" id="fileInput" accept="image/*">
+    </div>
+
+    <button class="btn dark" onclick="openCamera()">📷 Take Photo</button>
+
+    <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden">
+
+    <button class="btn" onclick="processPayslip()">Process PAYE</button>
+
+    <div id="loading"></div>
+    <div id="result" class="result"></div>
+
   </div>
 
   <!-- SELF EMPLOYED SECTION -->
-  <div id="selfSection" class="hidden">
-    <label>Annual Gross Income (₦)</label>
-    <input type="number" id="grossIncome">
+  <div id="seSection" class="hidden">
 
-    <label>Annual Business Expenses (₦)</label>
-    <input type="number" id="expenses">
+    <label>Annual Income (₦)</label>
+    <input type="number" id="seIncome">
 
-    <label>Annual Pension (Optional)</label>
-    <input type="number" id="pension">
+    <label>Total Allowable Expenses (₦)</label>
+    <input type="number" id="seExpenses">
 
-    <button class="main" onclick="calculateSelfEmployed()">Calculate Tax</button>
+    <label>Pension Contribution (₦)</label>
+    <input type="number" id="sePension">
+
+    <button class="btn" onclick="calculateSelfEmployedTax()">Calculate Self-Employed Tax</button>
+
+    <div id="seResult" class="result"></div>
+
   </div>
 
-  <div class="loading" id="loading"></div>
-  <div class="result" id="result"></div>
 </div>
 
 <script src="script.js"></script>
+
+<script>
+  let selectedFile = null;
+
+  document.getElementById("fileInput").addEventListener("change", e => {
+    selectedFile = e.target.files[0];
+  });
+
+  document.getElementById("cameraInput").addEventListener("change", e => {
+    selectedFile = e.target.files[0];
+  });
+
+  function openCamera() {
+    document.getElementById("cameraInput").click();
+  }
+
+  function showPAYE() {
+    document.getElementById("payeSection").classList.remove("hidden");
+    document.getElementById("seSection").classList.add("hidden");
+    document.getElementById("payeTab").classList.add("active");
+    document.getElementById("seTab").classList.remove("active");
+  }
+
+  function showSE() {
+    document.getElementById("seSection").classList.remove("hidden");
+    document.getElementById("payeSection").classList.add("hidden");
+    document.getElementById("seTab").classList.add("active");
+    document.getElementById("payeTab").classList.remove("active");
+  }
+
+  function processPayslip() {
+    if (!selectedFile) {
+      alert("Please select or capture a payslip first");
+      return;
+    }
+    window.processPayslipWithFile(selectedFile);
+  }
+</script>
+
 </body>
 </html>
